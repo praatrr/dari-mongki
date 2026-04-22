@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>dari kriwul</title>
+  <title>dari mongki</title>
   <style>
     /* --- 1. SETTING UTAMA --- */
     html, body {
@@ -47,7 +47,7 @@
       transform: scale(0.9);
     }
 
-    /* --- 3. LOADING SCREEN (MAHDUY) --- */
+    /* --- 3. LOADING SCREEN (HAI BABI) --- */
     #loading {
       position: fixed;
       top: 0;
@@ -63,21 +63,18 @@
       transition: opacity 1s ease-out;
     }
 
-    /* Container Teks */
     .loading-text {
       display: flex;
       gap: 10px;
     }
 
-    /* Gaya Huruf */
     .loading-text span {
-      font-size: 40px; /* Besar huruf di HP/Laptop */
+      font-size: 40px;
       font-weight: bold;
-      color: #333; /* Warna mati */
+      color: #333;
       animation: nyala 1.2s infinite ease-in-out;
     }
 
-    /* Animasi Lampu Nyala */
     @keyframes nyala {
       0%, 100% {
         color: #333;
@@ -89,15 +86,14 @@
       }
     }
 
-    /* Delay per huruf */
-    .loading-text span:nth-child(1) { animation-delay: 0.0s; } /* M */
-    .loading-text span:nth-child(2) { animation-delay: 0.2s; } /* A */
-    .loading-text span:nth-child(3) { animation-delay: 0.4s; } /* H */
-    .loading-text span:nth-child(4) { animation-delay: 0.6s; } /* D */
-    .loading-text span:nth-child(5) { animation-delay: 0.8s; } /* U */
-    .loading-text span:nth-child(6) { animation-delay: 1.0s; } /* Y */
+    .loading-text span:nth-child(1) { animation-delay: 0.0s; } 
+    .loading-text span:nth-child(2) { animation-delay: 0.2s; } 
+    .loading-text span:nth-child(3) { animation-delay: 0.4s; } 
+    .loading-text span:nth-child(4) { animation-delay: 0.6s; } 
+    .loading-text span:nth-child(5) { animation-delay: 0.8s; } 
+    .loading-text span:nth-child(6) { animation-delay: 1.0s; } 
+    .loading-text span:nth-child(7) { animation-delay: 1.2s; }
 
-    /* Teks kecil di bawah */
     #loading p {
       color: #888;
       margin-top: 20px;
@@ -109,29 +105,52 @@
     #c {
       display: block;
     }
+
+    /* --- 5. ANIMASI MENGETIK --- */
+    #typing-text {
+      position: fixed;
+      top: 65%; /* Atur posisi teks di bawah hati */
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ff4de1;
+      font-size: 28px;
+      font-weight: bold;
+      text-shadow: 0 0 15px rgba(255, 77, 225, 0.8);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 500;
+    }
+
+    /* Efek kursor ketik */
+    #typing-text::after {
+      content: '|';
+      animation: blink 0.7s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
   </style>
 </head>
 <body>
 
   <div id="start-screen">
-    <button id="play-btn">Play</button>
+    <button id="play-btn">Klik Disini</button>
   </div>
 
   <div id="loading">
     <div class="loading-text">
-      <span>H</span>
-      <span>A</span>
-      <span>I</span>
-      
-      <span>B</span>
-      <span>A</span>
-      <span>B</span>
-      <span>I</span>
+      <span>H</span><span>A</span><span>I</span>
+      &nbsp;
+      <span>B</span><span>A</span><span>B</span><span>I</span>
     </div>
-    <p>Sedang memuat...</p>
+    <p>Sabar ya...</p>
   </div>
 
   <canvas id="c"></canvas>
+
+  <div id="typing-text"></div>
 
   <audio id="lagu" loop hidden preload="auto">
     <source src="lagu.mp3" type="audio/mpeg">
@@ -143,6 +162,7 @@
       const playBtn = document.getElementById("play-btn");
       const loader = document.getElementById("loading");
       const audio = document.getElementById("lagu");
+      const typingArea = document.getElementById("typing-text");
 
       // --- LOGIKA KLIK TOMBOL ---
       playBtn.addEventListener('click', function() {
@@ -152,19 +172,34 @@
             });
         }
         
-        // 2. Tombol Play Hilang
         startScreen.style.display = "none";
 
-        // 3. Loading Berjalan
+        // Menunggu 9 detik untuk loading screen
         setTimeout(function() {
-          loader.style.opacity = "0"; // Fade out
+          loader.style.opacity = "0"; 
           setTimeout(function() {
-            loader.style.display = "none"; // Hilang total
+            loader.style.display = "none";
+            // Mulai ngetik "eeeaaakk" setelah loading hilang
+            mulaiNgetik();
           }, 1000);
-        }, 9000); // <-- Loading
+        }, 9000); 
       });
 
-      // --- LOGIKA CANVAS (HEART RESPONSIVE) ---
+      // --- FUNGSI MENGETIK ---
+      function mulaiNgetik() {
+        const pesan = "eeeaaakk";
+        let i = 0;
+        function ketik() {
+          if (i < pesan.length) {
+            typingArea.innerHTML += pesan.charAt(i);
+            i++;
+            setTimeout(ketik, 250); // Kecepatan ketik
+          }
+        }
+        ketik();
+      }
+
+      // --- LOGIKA CANVAS (ANIMASI HATI) ---
       const canvasElement = document.getElementById("c");
       const ctx = canvasElement.getContext("2d");
       let canvasWidth, canvasHeight, centerX, centerY;
@@ -179,48 +214,34 @@
       window.addEventListener('resize', resizeCanvas);
 
       const degreesToRadians = Math.PI / 180;
-      const particleCount = 500;
+      const particleCount = 400;
       const particleInstances = [];
       const colorPalette = ["217,65,65", "240,223,223", "255,161,161", "237,126,126", "240,96,137"];
 
-      ctx.strokeStyle = "white";
-      ctx.globalAlpha = 0.7;
-
-      function getRandomInteger(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      }
-
       class SparkleParticle {
         constructor() { this.reset(); }
-
         reset() {
-          this.radius = getRandomInteger(2, 8);
+          this.radius = Math.floor(Math.random() * 6) + 2;
           const initialDist = Math.random() * 100 + 1;
           const initialAngle = Math.random() * 360;
           const angleInRadians = initialAngle * degreesToRadians;
-
           this.x = centerX + initialDist * Math.cos(angleInRadians);
           this.y = centerY + initialDist * Math.sin(angleInRadians);
-
           const speedFactor = Math.random() * 0.8;
           this.velocityX = speedFactor * (Math.random() < 0.5 ? -1 : 1);
           this.velocityY = speedFactor * (Math.random() < 0.5 ? -1 : 1);
-
           this.alpha = Math.random() * 0.8 + 0.1;
           const colorIndex = Math.floor(Math.random() * colorPalette.length);
           this.colorString = `rgba(${colorPalette[colorIndex]}, ${this.alpha})`;
         }
-
         move() {
           this.x += this.velocityX;
           this.y += this.velocityY;
         }
-
         reverseDirection() {
           this.velocityX *= -1;
           this.velocityY *= -1;
         }
-
         draw(context) {
           context.beginPath();
           context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
@@ -234,12 +255,10 @@
       }
 
       function defineHeartShape(particleRadius) {
-        const heartSize = 90; 
-        const buffer = particleRadius;
-        const effectiveRadius = heartSize - buffer;
-        const safeRadius = Math.max(effectiveRadius, 1);
-        const topCurveY = centerY - 50; 
-        const bottomPointY = centerY + 200;
+        const heartSize = 100; 
+        const safeRadius = Math.max(heartSize - particleRadius, 1);
+        const topCurveY = centerY - 60; 
+        const bottomPointY = centerY + 180;
         const leftCurveX = centerX - heartSize;
         const rightCurveX = centerX + heartSize;
 
